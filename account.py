@@ -53,7 +53,7 @@ def account_func(username):
         bacg = PhotoImage(file ="resources/background.png")
 
 
-
+        
         frame=Frame(av,width=560,height=650)
         frame.pack(expand=True, fill=BOTH)
 
@@ -144,7 +144,7 @@ def account_func(username):
 
 
 
-
+        
         av.mainloop()
 
     def del_func():
