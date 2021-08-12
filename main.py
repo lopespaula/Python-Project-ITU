@@ -12,6 +12,7 @@ import json
 import account
 
 
+
 counter = 1
 
 
@@ -21,7 +22,7 @@ class main_loop:
 #def main_loop(username):
 
         def add_all_users_to_list():
-            
+
             db = mysql.connect('login_app.db')
             c = db.cursor()
             c.execute(f'select name from log_details')
@@ -29,7 +30,7 @@ class main_loop:
             for i in p:
                 all_user_listbox.insert(END,i[0])
 
-        
+
 
 
         def connect_with_server():
@@ -39,7 +40,7 @@ class main_loop:
             c.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
             #Server IP & port
             host = 'localhost'
-            port = 5000
+            port = 5001
             # create connection to server
             c.connect((host,port))
             msg = {'username':username,'alert':'Online','message':'None'}
@@ -52,12 +53,13 @@ class main_loop:
 
 
 
-        def recievingMessage (c): 
+        def recievingMessage (c):
             while True :
-                msg=c.recv(2048).decode('ascii')
+                msg=c.recv(2048).decode('utf-8')
+                # print("1" + msg)
                 j = msg.replace("'","\"")
+                # print("2" + j)
                 d = json.loads(j)
-                print(d)
                 if d['alert'] == 'Online':
                     to_write = f'                                 {d["username"]} is Online'
                     print(to_write)
@@ -76,7 +78,14 @@ class main_loop:
                     list_insert(d['user_list'])
                 # chat message coming from other clients
                 if d['message'] != 'None':
-                    to_write = f'{d["username"]} :- {d["message"]}'
+                    to_write = ''
+                    if d["isPrivate"] == 'true':
+                        if 'receiver' in d:
+                            to_write = f'(Direct message) Me to {d["receiver"]} :- {d["message"]}'
+                        else:   
+                            to_write = f'(Direct message) {d["username"]} to Me :- {d["message"]}'
+                    else:
+                        to_write = f'{d["username"]} to Everybody :- {d["message"]}'
                     t = chat_text.get(1.0,END)
                     chat_text.delete(1.0,END)
                     chat_text.insert(INSERT,t+to_write+'\n')
@@ -88,14 +97,25 @@ class main_loop:
             active_user_listbox.delete(0,END)
             for i in l:
                 active_user_listbox.insert(END,i)
-                
+
 
 
         def sendMessage (*args):
             msg = msg_entry.get()
-            msg = str({'username':username,'alert':'None','message':msg})
+            #
+            #
+            # %name% < %message%
+            # ^.+\s<\s.+$
+            match = re.search('^(.+)\s<\s(.+)$', msg)
+            msg_entry.delete(0, len(msg))
+            if match is None:
+                msg = str({'username':username,'alert':'None','message':msg})
+            else:
+                msg_entry.insert(0, match.group(1) + ' < ')
+                msg = str({'username':username,'alert':'None','message':match.group(2),'receiver':match.group(1)})
+
             global c
-            c.send(msg.encode('ascii'))
+            c.send(msg.encode('utf-8'))
 
 
         def account_func():
@@ -189,7 +209,7 @@ class main_loop:
 
 
 
-        bg = '#408080'
+        bg = 'Powder Blue'
 
         win = Tk()
         win.geometry('450x487')
@@ -197,7 +217,7 @@ class main_loop:
         win.title('MeetZone')
 
         Label(win, text='',bg=bg,width=450,font=('arial black',15,'bold'),relief='groove').pack()
-        title_label = Label(win, text='MeetZone',bg=bg,fg='white',font=('arial black',12,'bold'))
+        title_label = Label(win, text='MeetZone',bg=bg,fg='dark blue',font=('Comic Sans MS',20,'bold'))
         title_label.place(x=350,y=2)
 
         menu_img = PhotoImage(file='resources/menu.png')
@@ -224,31 +244,32 @@ class main_loop:
 
         ##Menu Bar
 
-        menu_bg = Label(win, text='',bg=bg,width=15,font=('arial black',15,'bold'),relief='groove',height=16)
-        log_bg = Label(win,bg=bg,width=30,height=9,relief='groove')
+        menu_bg = Label(win, text='',width=25,height=22,bg=bg,font=('Comic Sans MS',15,'bold'),relief='groove')
+        log_bg = Label(win,bg=bg,width=25,height=9,relief='groove')
         login_img =PhotoImage(file='resources/login.png')
         log_img = Label(win,image=login_img,bg=bg)
-        log_in_as = Label(win, text='Logged In As : ',bg=bg,font=('',13),fg='white')
-        name = Label(win, text=username,bg=bg,font=('',10,'bold'),fg='white')
+
+        log_in_as = Label(win, text='Logged In As : ',bg=bg,font=('Comic Sans MS',13),fg='dark blue')
+        name = Label(win, text=username,bg=bg,font=('Comic Sans MS',20,'bold'),fg='dark blue')
     ##    if len(username) > 25:
     ##        name['font'] = ('',9,'bold')
         mail_img = PhotoImage(file='resources/chat-4-24.png')
-        group_b = Button(win, image=mail_img, bg=bg,bd=0,text=' Group Chat',compound='left',fg='white',font=('arial black',10,'bold'),command=menu_operate_func)
+        group_b = Button(win, image=mail_img, bg=bg,bd=0,text=' Group Chat',compound='left',fg='dark blue',font=('Comic Sans MS',10,'bold'),command=menu_operate_func)
         mul_mail_img = PhotoImage(file='resources/user-4-24.png')
-        user_l_b = Button(win, image=mul_mail_img, bg=bg,bd=0,text=' User Lists',compound='left',fg='white',font=('arial black',10,'bold'),command=user_l_func)
+        user_l_b = Button(win, image=mul_mail_img, bg=bg,bd=0,text=' User Lists',compound='left',fg='dark blue',font=('Comic Sans MS',10,'bold'),command=user_l_func)
         setting_img = PhotoImage(file='resources/camera-settings-icon-white-300x300.png')
-        setting_b = Button(win, image=setting_img, bg=bg,bd=0,text=' Account Settings',compound='left',fg='white',font=('arial black',10,'bold'),command=account_func)
+        setting_b = Button(win, image=setting_img, bg=bg,bd=0,text=' Account Settings',compound='left',fg='dark blue',font=('Comic Sans MS',10,'bold'),command=account_func)
         about_img = PhotoImage(file='resources/about.png')
-        about_b = Button(win, image=about_img, bg=bg,bd=0,text=' About',compound='left',fg='white',font=('arial black',10,'bold'),command=about_func)
+        about_b = Button(win, image=about_img, bg=bg,bd=0,text=' About',compound='left',fg='dark blue',font=('Comic Sans MS',10,'bold'),command=about_func)
         logout_img = PhotoImage(file='resources/logout-24.png')
-        logout_b = Button(win, image=logout_img, bg=bg,bd=0,text=' Log Out',compound='left',fg='white',font=('arial black',10,'bold'),command=logout_func)
+        logout_b = Button(win, image=logout_img, bg=bg,bd=0,text=' Log Out',compound='left',fg='dark blue',font=('Comic Sans MS',10,'bold'),command=logout_func)
 
 
         ## User List
-        Label(win, bg=bg, width=14, text='All Users', fg='White',font=('Cambria',13)).place(x=460,y=50)
+        Label(win, bg=bg, width=14, text='All Users', fg='dark blue',font=('Comic Sans MS',13)).place(x=460,y=50)
         all_user_listbox = Listbox(win, width=14, height=7,font=('Cambria',13))
         all_user_listbox.place(x=460,y=75)
-        Label(win, bg=bg, width=14, text='Active Users', fg='White',font=('Cambria',13)).place(x=460,y=250)
+        Label(win, bg=bg, width=14, text='Active Users', fg='dark blue',font=('Comic Sans MS',13)).place(x=460,y=250)
         active_user_listbox = Listbox(win, width=14, height=6,font=('Cambria',13))
         active_user_listbox.place(x=460,y=275)
 
@@ -256,7 +277,7 @@ class main_loop:
 
         connect_with_server()
         add_all_users_to_list()
-        
+
 
         def on_closing():
             res = mb.askyesnocancel('Exit','Do you want to logout and Exit?')
@@ -268,13 +289,13 @@ class main_loop:
                 win.destroy()
                 msg = {'username':username,'alert':'Offline','message':'None'}
                 c.send(str(msg).encode('utf-8'))
-                
+
             elif res == False:
                 win.destroy()
                 msg = {'username':username,'alert':'Offline','message':'None'}
                 c.send(str(msg).encode('utf-8'))
-                
-                
+
+
 
 
         win.protocol("WM_DELETE_WINDOW", on_closing)
