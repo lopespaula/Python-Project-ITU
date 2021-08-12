@@ -9,7 +9,7 @@ import json
 server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)  
 server.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 host="localhost"
-port=5000
+port=5001
 server.bind((host,port))
 server.listen(5)
 
@@ -32,8 +32,18 @@ def connectNewClient(c):
                     clients_name.pop(clients_name.index(d['username']))
                     clients.pop(clients.index(c))
                
-               to_send_dict = str({'user_list':clients_name,'alert': d['alert'],'message': d['message'],'username':d['username']})
-               sendToAll(to_send_dict)
+               #Private Message to Selected receiver
+               if 'receiver' in d:
+                    # find right socket
+                    index = clients_name.index(d['receiver'])
+                    receiverSocket = clients[index]
+                    receiverPrivateMessage = str({'isPrivate': 'true', 'user_list':clients_name,'alert': d['alert'],'message': d['message'],'username':d['username']})
+                    receiverSocket.send(receiverPrivateMessage.encode('utf-8'))
+                    senderPrivateMessage = str({'isPrivate': 'true', 'user_list':clients_name,'alert': d['alert'],'message': d['message'],'receiver':d['receiver']})
+                    c.send(senderPrivateMessage.encode('utf-8'))
+               else:
+                    to_send_dict = str({'isPrivate': 'false','user_list':clients_name,'alert': d['alert'],'message': d['message'],'username':d['username']})
+                    sendToAll(to_send_dict)
           except:
                pass
          

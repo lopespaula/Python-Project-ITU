@@ -14,28 +14,40 @@ class login:
             pass
         global log
         log = Tk()
-        log.title('Login')
-        log.geometry('300x300+220+170')
-        log.configure(bg='white')
+        log.title('Login Page')
+        log.geometry('420x450+220+170')
+        log.configure(bg='powder blue')
         log.resizable(0,0)
 
-        log_label = Label(log, text='Login', width=20, height=1, font=('Arial Black',20,'bold'))
-        log_label.pack()
+        bg = PhotoImage(file ="resources/background.png")
 
-        u = Label(log, text='Username :', font=('Arial Black',14,'bold'),bg='white')
-        u.place(x=10,y=50)
+        canvas1 = Canvas(log,width=420,height=450)
+        canvas1.pack(fill ="both", expand =True)
+        canvas1.create_image(0,0,image =bg,anchor ="nw")
+
+        canvas1.create_text(200,40,text="MEETZONE",font=('Comic Sans MS',40,'bold'),fill='dark blue',activefill='blue')
+        canvas1.create_text(80,100,text='UserName',font=('Comic Sans MS',20,'bold'),fill='dark blue',activefill='blue')
+
+        # log_label = Label(log, text='MEETZONE',bg='powder blue', width=20, height=1, font=('Comic Sans MS',40,'bold'),fg='indigo')
+        # log_label.pack()
+
+        # u = Label(log, text='Username :', font=('Comic Sans MS',14,'bold'),bg='powder blue',fg='indigo')
+        # u.place(x=10,y=80)
         
-        user_entry = Entry(log, font=('Arial Black',10,'bold'),  width=25,bg='powder blue')
-        user_entry.place(x=10, y=80)
+        user_entry = Entry(log, font=('Arial Black',10,'bold'),  width=25,bg='white')
+        user_entry.place(x=30, y=120)
 
-        p = Label(log, text='Password :', font=('Arial Black',14,'bold'),bg='white')
-        p.place(x=10,y=110)
+        canvas1.create_text(80,180,text='Password ',font=('Comic Sans MS',20,'bold'),fill='dark blue',activefill='blue')
+
+
+        # p = Label(log, text='Password :', font=('Comic Sans MS',14,'bold'),bg='powder blue',fg='indigo')
+        # p.place(x=10,y=160)
         
-        pass_entry = Entry(log,show='*', font=('Arial Black',10,'bold'),  width=25,bg='powder blue')
-        pass_entry.place(x=10, y=140)
+        pass_entry = Entry(log,show='*', font=('Arial Black',10,'bold'),  width=25,bg='white')
+        pass_entry.place(x=30, y=200)
 
-        resp = Label(log, text='',font=('Arial Black',10,'bold'),bg='white')
-        resp.place(x=10, y=250)
+        resp = Label(log, text='',font=('Arial Black',10,'bold'),bg='powder blue')
+        resp.place(x=30, y=290)
         
         def log_func(*args):
 
@@ -53,31 +65,33 @@ class login:
                 for i in b:
                     passw = i[0]
 
-                if password == passw:
-                    c.execute(f'select name from LOG_DETAILS where Username= "{user}"')
-                    b = c.fetchall()[0][0]
-                    username_name = b
-                    resp.configure(text=f'Login Successful\n Welcome {b} ', fg='green')
-                    log.destroy()
-                    f = open('isLog.txt','w')
-                    to_write = 'logged in,'+b
-                    f.write(to_write)
-                    f.close()
-                    main.main_loop(b)
+                    if password == passw:
+                        c.execute(f'select name from LOG_DETAILS where Username= "{user}"')
+                        b = c.fetchall()[0][0]
+                        username_name = b
+                        resp.configure(text=f'Login Successful\n Welcome {b} ', fg='green')
+                        log.destroy()
+                        f = open('isLog.txt','w')
+                        to_write = 'logged in,'+b
+                        f.write(to_write)
+                        f.close()
+                        main.main_loop(b)
 
-                else:
-                    resp.configure(text='Wrong Password', fg='red')
+                    else:
+                        resp.configure(text='Wrong Password', fg='red')
                     
             except UnboundLocalError:
                 resp.configure(text=f'Username {user} Does Not Exist', fg='red')
 
 
-        submit = Button(log, text='Submit',font=('Arial Black',10,'bold'), width=14, bg='green', command=log_func,bd=0,fg='white')
-        submit.place(x=10, y=180)
+        submit = Button(log, text='Log-in',font=('Comic Sans MS',10,'bold'), width=14, command=log_func,bd=0,fg='indigo')
+        submit.place(x=30, y=260)
 
-        Label(log, text='Dont\'t Have An Account.',bg='white').place(x=30,y=210)
+        canvas1.create_text(160,360,text='Click On Register If You Don\'t Have An Account.',font=('Comic Sans MS',9,'italic'),fill='dark blue',activefill='blue')
 
-        Button(log,text='Register',font=('',10,'underline'),bg='white',fg='blue',command=register).place(x=130,y=230)
+        # Label(log, text='Click On Register If You Don\'t Have An Account.',font=('Courier',10,'italic'),bg='powder blue',fg='dark blue').place(x=50,y=350)
+
+        Button(log,text='Register',font=('',10,'underline','italic'),bg='powder blue',command=register,fg='blue').place(x=60,y=370)
 
         log.bind('<Return>', log_func)
 
@@ -91,35 +105,54 @@ class register:
            log.destroy()
         except:
            pass
+
                 
         global reg
         reg = Tk()
-        reg.title('Register')
-        reg.configure(bg='white')
-        reg.geometry('400x400+250+180')
+        reg.title('Register Page')
+        reg.configure(bg='powder blue')
+        reg.geometry('420x450+220+170')
         reg.resizable(0,0)
-        reg_label = Label(reg, text='Register',fg='black', width=20, height=1, font=('Arial Black',20,'bold'))
-        reg_label.pack()
+
+        bg = PhotoImage(file ="resources/background.png")
+
+        canvas2 = Canvas(reg,width=420,height=450)
+        canvas2.pack(fill ="both", expand =True)
+        canvas2.create_image(0,0,image =bg,anchor ="nw")
+
+        canvas2.create_text(200,40,text="MEETZONE",font=('Comic Sans MS',40,'bold'),fill='dark blue',activefill='blue')
 
 
-        n = Label(reg, text='Name :', font=('Arial Black',14,'bold'),bg='white')
-        n.place(x=10,y=50)
+        # reg_label = Label(reg, text='MEETZONE', width=20, height=1, font=('Comic Sans MS',40,'bold'),bg='powder blue',fg='indigo')
+        # reg_label.pack()
+
+
+        canvas2.create_text(90,100,text='Full Name ', font=('Comic Sans MS',20,'bold'),fill='dark blue',activefill='blue')
+
+        # n = Label(reg, text='Please Enter Your Name :', font=('Comic Sans MS',14,'bold'),bg='powder blue', fg ='indigo')
+        # n.place(x=10,y=80)
                 
-        name_entry = Entry(reg, font=('Arial Black',10,'bold'),  width=25,bg='powder blue')
-        name_entry.place(x=10,y=80)
+        name_entry = Entry(reg, font=('Arial Black',10,'bold'),  width=25,bg='white')
+        name_entry.place(x=40,y=120)
 
-        u = Label(reg, text='Username :', font=('Arial Black',14,'bold'),bg='white')
-        u.place(x=10,y=110)
+        canvas2.create_text(90,180,text='UserName', font=('Comic Sans MS',20,'bold'),fill='dark blue',activefill='blue')
+
+
+
+        # u = Label(reg, text='Please Enter Your Username :', font=('Comic Sans MS',14,'bold'),bg='powder blue',fg='indigo')
+        # u.place(x=10,y=160)
                 
-        user_entry = Entry(reg, font=('Arial Black',10,'bold'),  width=25,bg='powder blue')
-        user_entry.place(x=10, y=140)
+        user_entry = Entry(reg, font=('Arial Black',10,'bold'),  width=25,bg='white')
+        user_entry.place(x=40, y=200)
+
+        canvas2.create_text(110,260,text='New Password', font=('Comic Sans MS',20,'bold'),fill='dark blue',activefill='blue')
 
 
-        p = Label(reg, text='New Password :', font=('Arial Black',14,'bold'),bg='white')
-        p.place(x=10,y=170)
+        # p = Label(reg, text='Please Enter New Password :', font=('Comic Sans MS',14,'bold'),bg='powder blue', fg='indigo')
+        # p.place(x=10,y=240)
                 
-        pass_entry = Entry(reg,show='*', font=('Arial Black',10,'bold'),  width=25,bg='powder blue')
-        pass_entry.place(x=10, y=200)
+        pass_entry = Entry(reg,show='*', font=('Arial Black',10,'bold'),  width=25,bg='white')
+        pass_entry.place(x=40, y=280)
 
 
         def reg_func(*args):
@@ -137,7 +170,7 @@ class register:
                 c.execute('select Username from LOG_DETAILS')
 
                 l = c.fetchall()
-                ex_t = False # neeru added
+                ex_t = False
                 for i in l:
                     if user == i[0]:
                         ex_t = True
@@ -146,7 +179,6 @@ class register:
                         ex_t = False
                         
                 if ex_t == True:
-
                     mb.showerror('Register',f'{user} Already Exist.')
                 else:                
                     c.execute(f'insert into LOG_DETAILS values("{name}","{user}","{password}","0.png")')
@@ -164,13 +196,15 @@ class register:
                     main.main_loop(username_name)
             else:
                 mb.showerror('Register','Please Fill All The Fields.')
-            
-        submit = Button(reg, text='Submit',font=('Arial Black',10,'bold'), width=14, bg='green', command=reg_func,bd=0,fg='white')
-        submit.place(x=10, y=240)
 
-        Label(reg, text='Already Had A Account.',bg='white').place(x=30,y=275)
+        submit = Button(reg, text='Register',font=('Comic Sans MS',10,'bold'), width=14, bg='powder blue', command=reg_func,bd=0,fg='indigo')
+        submit.place(x=40, y=320)
 
-        Button(reg,text='Log_In',font=('',10,'underline'),bg='white',fg='blue',command=login).place(x=130,y=300)
+        canvas2.create_text(110,380,text='Already Have An Account.',font=('Comic Sans MS',9,'italic'),fill='dark blue',activefill='blue')
+
+        # Label(reg, text='Already Have An Account.',font=('Courier',10,'italic'),bg='powder blue',fg='dark blue').place(x=50,y=375)
+
+        Button(reg,text='Log_In',font=('',10,'underline','italic'),bg='powder blue',fg='blue',command=login).place(x=60,y=390)
 
         reg.bind('<Return>', reg_func)
 
